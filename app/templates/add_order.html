@@ -1,0 +1,49 @@
+{% extends 'template.html' %}
+
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавление заказа</title>
+
+    <style>
+        .btn {
+            margin: 10px; /* Отступ со всех сторон */
+        }
+    </style>
+</head>
+<h1>Добавление заказа</h1>
+
+<form method="post" id="orderForm">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="table_number">Номер стола:</label>
+        <input type="text" name="table_number" id="table_number" class="form-control" placeholder="Введите номер стола">
+    </div>
+    <div class="form-group">
+        <label for="items">Список блюд:</label>
+        <div id="itemsContainer">
+            <input type="text" name="items" class="form-control" placeholder="Введите блюдо">
+        </div>
+        <button type="button" class="btn btn-secondary mt-2" onclick="addItemField()">Добавить блюдо</button>
+    </div>
+    <button type="submit" class="btn btn-primary">Создать заказ</button>
+</form>
+
+<script>
+    function addItemField() {
+        const container = document.getElementById('itemsContainer');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'items';
+        input.className = 'form-control mt-2';
+        input.placeholder = 'Введите блюдо';
+        container.appendChild(input);
+    }
+</script>
+
+
+{% endblock %}
