@@ -1,58 +1,31 @@
-from rest_framework import status, generics
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from .models import ApiOrder
-from .serializers import OrderSerializer, OrderStatusSerializer, OrderListSerializer, OrderDeleteSerializer, \
-    OrderGetSerializer
+from .serializers import OrderSerializer, OrderStatusSerializer, OrderListSerializer
 
-
-class OrderListCreateView(generics.CreateAPIView):
+class OrderViewSet(viewsets.ModelViewSet):
     queryset = ApiOrder.objects.all()
     serializer_class = OrderSerializer
 
+    def get_serializer_class(self):
+        # Используем разные сериализаторы для разных действий
+        if self.action == 'list':
+            return OrderListSerializer
+        elif self.action == 'update_status':
+            return OrderStatusSerializer
+        return OrderSerializer
 
-class OrderStatusUpdateView(APIView):
-
-    def patch(self, request, pk):
-        try:
-            order = ApiOrder.objects.get(pk=pk)
-        except ApiOrder.DoesNotExist:
-            return Response({"error": "Заказ не найден."}, status=status.HTTP_404_NOT_FOUND)
-
-        order.delete()
-        return Response({"message": "Заказ успешно удален."}, status=status.HTTP_204_NO_CONTENT)
-
-class OrderListView(generics.ListAPIView):
-    queryset = ApiOrder.objects.all()
-    serializer_class = OrderListSerializer
-
-
-class OrderDeleteView(APIView):
-
-    def delete(self, request, pk):
-        try:
-            order = ApiOrder.objects.get(pk=pk)
-        except ApiOrder.DoesNotExist:
-            return Response({"error": "Заказ не найден."}, status=status.HTTP_404_NOT_FOUND)
-
-        order.delete()
-        return Response({"message": "Заказ успешно удален."}, status=status.HTTP_204_NO_CONTENT)
-
-class OrderGetView(APIView):
-
-    def get(self, request, pk):
-        try:
-            order = ApiOrder.objects.get(pk=pk)
-        except ApiOrder.DoesNotExist:
-            return Response({"error": "Заказ не найден."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = OrderSerializer(order)
+    @action(detail=True, methods=['patch'])
+    def update_status(self, request, pk=None):
+        order = self.get_object()
+        serializer = self.get_serializer(order, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-class RevenueReportView(APIView):
-    def get(self, request):
+    @action(detail=False, methods=['get'])
+    def revenue(self, request):
         # Фильтруем заказы со статусом "оплачено"
         paid_orders = ApiOrder.objects.filter(status='оплачено')
 
