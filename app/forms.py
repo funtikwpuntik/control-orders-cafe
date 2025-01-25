@@ -1,11 +1,11 @@
-import json
-
 from django import forms
 
 from db.models import Order
 
 class OrderForm(forms.ModelForm):
-
+    """
+    Форма для обработки нового заказа
+    """
 
     class Meta:
         model = Order
@@ -27,15 +27,7 @@ class OrderForm(forms.ModelForm):
                 'placeholder': 'Введите список блюд через запятую.',  # Текст внутри поля
                 'class': 'form-control',
             }),
-            # 'user': forms.HiddenInput(),
-            # 'video_format': forms.HiddenInput()
         }
-        #
-    # def __init__(self, *args, **kwargs):
-    #     print(kwargs.get('items'))
-    #     self.total_price = sum([float(item['price']) for item in kwargs.get('items')])
-    #     self.status = 'в ожидании'
-    #     super().__init__(*args, **kwargs)
 
     def save(self, commit=True):
         instance = super().save(commit=False)

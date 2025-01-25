@@ -5,6 +5,10 @@ from .models import ApiOrder
 from .serializers import OrderSerializer, OrderStatusSerializer, OrderListSerializer
 
 class OrderViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet для работы с приложением по api.
+    Реализованы CRUD операции
+    """
     queryset = ApiOrder.objects.all()
     serializer_class = OrderSerializer
 

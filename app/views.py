@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
-from django.http import HttpResponse
 
 from app.forms import OrderForm, OrderStatusForm
 import json
@@ -11,6 +10,9 @@ from django.db.models import Sum, Q
 
 
 def revenue_report(request):
+
+    # Модуль для расчета суммы выручки
+
     total_revenue = Order.objects.filter(status='оплачено').aggregate(Sum('total_price'))['total_price__sum']
     return render(request, 'revenue_report.html', {'total_revenue': total_revenue})
 def index(request):
@@ -18,6 +20,9 @@ def index(request):
 
 
 def add_order(request):
+
+    # Страница добавления заказа
+
     if request.POST:
         post_data = request.POST.copy()
         post_data['items'] = request.POST.getlist('items')
@@ -41,7 +46,10 @@ def add_order(request):
     return render(request, 'add_order.html', {'form': form})
 
 def list_orders(request):
-    query = request.GET.get('q')  # Получаем поисковый запрос
+
+    # Страница со списком заказов
+
+    query = request.GET.get('q')
     if query:
         query = query.lower()
         # Ищем заказы по номеру стола или статусу
@@ -54,6 +62,9 @@ def list_orders(request):
     return render(request, 'list_orders.html', {'orders': orders})
 
 def change_order(request, pk):
+
+    # Страница изменения статуса заказа
+
     order = get_object_or_404(Order, pk=pk)
     if request.method == 'POST':
         form = OrderStatusForm(request.POST, instance=order)
@@ -65,6 +76,9 @@ def change_order(request, pk):
     return render(request, 'change_order.html', {'form': form, 'order': order})
 
 def delete_order(request, pk):
+
+    # Страница удаления заказа
+
     order = get_object_or_404(Order, pk=pk)
     if request.method == 'POST':
         order.delete()

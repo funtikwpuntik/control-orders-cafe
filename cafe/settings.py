@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'db',
 ]
-# handler404 = 'app.views.custom_404'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
